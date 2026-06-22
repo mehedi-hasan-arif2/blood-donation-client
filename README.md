@@ -1,0 +1,1 @@
+$i=0; Get-ChildItem -Recurse -File | Where-Object { $_.FullName -notlike "*node_modules*" } | ForEach-Object { $i++; "$i. $($_.FullName)" }
