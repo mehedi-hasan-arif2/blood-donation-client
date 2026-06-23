@@ -1,14 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import useAxiosPublic from "../hooks/useAxiosPublic";
 import Swal from "sweetalert2";
-import { Mail, Lock, User, Droplet, MapPin, Eye, EyeOff, UploadCloud, Heart } from "lucide-react";
+import { Mail, Lock, User, Droplet, MapPin, Eye, EyeOff, UploadCloud, Heart, Phone, Map } from "lucide-react";
 import Loader from "../components/Loader";
-
-// NOTE: later you will replace this with ImageBB upload API
-const mockUploadImage = async (file) => {
-  return "https://i.ibb.co/placeholder-image.jpg";
-};
+import districtsData from "../data/districts.json"; 
+import upazilasData from "../data/upazilas.json";
 
 const Register = () => {
   const axiosPublic = useAxiosPublic();
@@ -17,7 +14,44 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  
+  // Image and preview states
   const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null); 
+  
+  const [selectedDistrictId, setSelectedDistrictId] = useState("");
+  const [filteredUpazilas, setFilteredUpazilas] = useState([]);
+
+  // Filter upazilas when a district is selected
+  useEffect(() => {
+    if (selectedDistrictId) {
+      const allUpazilas = upazilasData[2]?.data || [];
+      const upazilas = allUpazilas.filter(u => String(u.district_id) === String(selectedDistrictId));
+      setFilteredUpazilas(upazilas);
+    } else {
+      setFilteredUpazilas([]);
+    }
+  }, [selectedDistrictId]);
+
+  // Handle image selection and create a preview URL
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file)); 
+    }
+  };
+
+  // Upload image to ImgBB
+  const uploadImageToImgBB = async (imageFile) => {
+    const formData = new FormData();
+    formData.append("image", imageFile);
+
+    const url = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API_KEY}`;
+    
+    const response = await axiosPublic.post(url, formData);
+    return response.data.data.display_url; 
+  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -25,11 +59,13 @@ const Register = () => {
 
     const form = e.target;
 
+    // Form inputs
     const name = form.name.value;
     const email = form.email.value;
     const password = form.password.value;
     const confirmPassword = form.confirmPassword.value;
 
+    // Check if passwords match
     if (password !== confirmPassword) {
       Swal.fire("Error", "Passwords do not match", "error");
       setLoading(false);
@@ -37,18 +73,31 @@ const Register = () => {
     }
 
     let avatarUrl = "";
+    
+    // Upload image if a file is selected
     if (image) {
-      avatarUrl = await mockUploadImage(image);
+      try {
+        avatarUrl = await uploadImageToImgBB(image);
+      } catch (error) {
+        Swal.fire("Error", "Image upload failed! Please check your connection.", "error");
+        setLoading(false);
+        return; 
+      }
     }
 
+    const districtName = form.district.options[form.district.selectedIndex].text;
+    const upazilaName = form.upazila.options[form.upazila.selectedIndex].text;
+    
     const userData = {
       name,
       email,
       password,
       avatar: avatarUrl,
       bloodGroup: form.bloodGroup.value,
-      district: form.district.value,
-      upazila: form.upazila.value,
+      district: districtName,
+      upazila: upazilaName,   
+      phone: form.phone.value,
+      gender: form.gender.value,
       role: "donor",
       status: "active",
     };
@@ -110,6 +159,39 @@ const Register = () => {
             Create Account
           </h2>
 
+         {/* Form Box Start */}
+
+         {/* AVATAR UPLOAD WITH LIVE PREVIEW */}
+          <div className="flex items-center gap-4 border p-3 rounded-lg bg-white">
+            <label className="flex items-center gap-2 cursor-pointer text-gray-600 hover:text-red-500 transition flex-1">
+              <UploadCloud size={18} />
+              <span className="text-sm font-medium">
+                {image ? "Change Avatar" : "Upload Avatar"}
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={handleImageChange}
+              />
+            </label>
+            
+            {/* Live Preview Circle */}
+            {imagePreview ? (
+              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-red-500 shadow-sm shrink-0">
+                <img 
+                  src={imagePreview} 
+                  alt="Avatar Preview" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 text-xs shrink-0 font-medium">
+                No Img
+              </div>
+            )}
+          </div>
+
           {/* NAME */}
           <div className="relative">
             <User className="absolute top-3 left-3 text-gray-400" size={18} />
@@ -133,6 +215,89 @@ const Register = () => {
             />
           </div>
 
+          {/* PHONE NUMBER */}
+          <div className="relative">
+            <Phone className="absolute top-3 left-3 text-gray-400" size={18} />
+            <input
+              name="phone"
+              type="tel"
+              placeholder="Phone Number"
+              className="w-full border pl-10 py-2 rounded-lg text-gray-900 focus:ring-2 focus:ring-red-500"
+              required
+            />
+          </div>
+
+          {/* GENDER */}
+          <div className="relative">
+            <User className="absolute top-3 left-3 text-gray-400" size={18} />
+            <select
+              name="gender"
+              className="w-full border pl-10 py-2 rounded-lg text-gray-900 focus:ring-2 focus:ring-red-500"
+              required
+            >
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          {/* BLOOD GROUP */}
+          <div className="relative">
+            <Droplet className="absolute top-3 left-3 text-gray-400" size={18} />
+            <select
+              name="bloodGroup"
+              className="w-full border pl-10 py-2 rounded-lg text-gray-900 focus:ring-2 focus:ring-red-500"
+              required
+            >
+              <option value="">Select Blood Group</option>
+              <option>A+</option>
+              <option>A-</option>
+              <option>B+</option>
+              <option>B-</option>
+              <option>AB+</option>
+              <option>AB-</option>
+              <option>O+</option>
+              <option>O-</option>
+            </select>
+          </div>
+
+          {/* DISTRICT DROPDOWN */}
+          <div className="relative">
+            <MapPin className="absolute top-3 left-3 text-gray-400" size={18} />
+            <select
+              name="district"
+              className="w-full border pl-10 py-2 rounded-lg text-gray-900 focus:ring-2 focus:ring-red-500 bg-white"
+              onChange={(e) => setSelectedDistrictId(e.target.value)}
+              required
+            >
+              <option value="">Select District</option>
+              {districtsData[2]?.data?.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* UPAZILA DROPDOWN */}
+          <div className="relative">
+            <Map className="absolute top-3 left-3 text-gray-400" size={18} />
+            <select
+              name="upazila"
+              className="w-full border pl-10 py-2 rounded-lg text-gray-900 focus:ring-2 focus:ring-red-500 bg-white"
+              required
+            >
+              <option value="">Select Upazila</option>
+              {filteredUpazilas.map((u) => (
+                <option key={u.id} value={u.name}>
+                  {u.name}
+                </option>
+              ))}
+
+            </select>
+          </div>
+
           {/* PASSWORD */}
           <div className="relative">
             <Lock className="absolute top-3 left-3 text-gray-400" size={18} />
@@ -143,7 +308,6 @@ const Register = () => {
               className="w-full border pl-10 pr-10 py-2 rounded-lg text-gray-900 focus:ring-2 focus:ring-red-500"
               required
             />
-
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -163,7 +327,6 @@ const Register = () => {
               className="w-full border pl-10 pr-10 py-2 rounded-lg text-gray-900 focus:ring-2 focus:ring-red-500"
               required
             />
-
             <button
               type="button"
               onClick={() => setShowConfirm(!showConfirm)}
@@ -171,52 +334,6 @@ const Register = () => {
             >
               {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
-          </div>
-
-          {/* BLOOD GROUP */}
-          <select
-            name="bloodGroup"
-            className="w-full border p-2 rounded-lg text-gray-900 focus:ring-2 focus:ring-red-500"
-            required
-          >
-            <option value="">Select Blood Group</option>
-            <option>A+</option>
-            <option>A-</option>
-            <option>B+</option>
-            <option>B-</option>
-            <option>AB+</option>
-            <option>AB-</option>
-            <option>O+</option>
-            <option>O-</option>
-          </select>
-
-          {/* DISTRICT (FIXED - select placeholder) */}
-          <input
-            name="district"
-            placeholder="District (dropdown later)"
-            className="w-full border p-2 rounded-lg text-gray-900"
-            required
-          />
-
-          {/* UPAZILA */}
-          <input
-            name="upazila"
-            placeholder="Upazila (dropdown later)"
-            className="w-full border p-2 rounded-lg text-gray-900"
-            required
-          />
-
-          {/* AVATAR UPLOAD */}
-          <div>
-            <label className="flex items-center gap-2 border p-2 rounded-lg cursor-pointer text-gray-600">
-              <UploadCloud size={18} />
-              Upload Avatar (ImageBB later)
-              <input
-                type="file"
-                hidden
-                onChange={(e) => setImage(e.target.files[0])}
-              />
-            </label>
           </div>
 
           {/* BUTTON */}
