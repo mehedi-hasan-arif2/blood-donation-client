@@ -1,12 +1,16 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import useAxiosPublic from "../hooks/useAxiosPublic";
+import useAuth from "../hooks/useAuth";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/firebase.config";
 import Swal from "sweetalert2";
 import { Mail, Lock, Eye, EyeOff, Heart } from "lucide-react";
 import Loader from "../components/Loader";
 
 const Login = () => {
   const axiosPublic = useAxiosPublic();
+  const { loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
@@ -17,37 +21,47 @@ const Login = () => {
     setLoading(true);
 
     const form = e.target;
-
-    const loginData = {
-      email: form.email.value,
-      password: form.password.value,
-    };
+    const email = form.email.value;
+    const password = form.password.value;
 
     try {
-      const res = await axiosPublic.post("/login", loginData);
+      // firebase authentication
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      
+      if (result.user) {
+        const loginData = { email, password };
 
-      if (res.data.token) {
-        localStorage.setItem("access-token", res.data.token);
+        // Server token generation
+        const res = await axiosPublic.post("/login", loginData);
 
-        Swal.fire({
-          icon: "success",
-          title: "Login Successful",
-          timer: 1500,
-          showConfirmButton: false,
-        });
+        if (res.data.token) {
+          localStorage.setItem("access-token", res.data.token);
 
-        navigate("/");
-      } else {
-        Swal.fire("Error", "Invalid credentials", "error");
+          Swal.fire({
+            icon: "success",
+            title: "Login Successful",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+
+          navigate("/");
+        } else {
+          Swal.fire("Error", "Invalid credentials", "error");
+        }
       }
     } catch (err) {
-      Swal.fire("Error", "Login failed", "error");
+      console.error("Login Error: ", err);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.message || "Login failed",
+      });
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
-  if (loading) return <Loader />;
+  if (loading || authLoading) return <Loader />;
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
@@ -162,7 +176,7 @@ const Login = () => {
           {/* LINK */}
           <p className="text-center text-sm text-gray-600">
             Don’t have an account?{" "}
-            <Link to="/register" className="text-red-500 font-semibold">
+            <Link to="/register" className="text-red-500 font-semibold hover:underline">
               Register
             </Link>
           </p>

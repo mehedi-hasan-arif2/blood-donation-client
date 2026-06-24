@@ -1,3 +1,4 @@
+import useAuth from "../hooks/useAuth"; 
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import useAxiosPublic from "../hooks/useAxiosPublic";
@@ -8,8 +9,16 @@ import districtsData from "../data/districts.json";
 import upazilasData from "../data/upazilas.json";
 
 const Register = () => {
-  const axiosPublic = useAxiosPublic();
+  const { user, createUser, updateUserProfile } = useAuth();
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
+
+  // Redirect logged-in users to home page
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -64,10 +73,45 @@ const Register = () => {
     const email = form.email.value;
     const password = form.password.value;
     const confirmPassword = form.confirmPassword.value;
+    
+    // Image validation
+    if (!image) {
+     Swal.fire(
+     "Avatar Required",
+     "Please upload your profile picture",
+     "warning"
+    );
+     setLoading(false);
+     return;
+    }
 
-    // Check if passwords match
+        // Password validation
+    if (password.length < 6) {
+      Swal.fire(
+        "Weak Password",
+        "Password must be at least 6 characters",
+        "warning"
+      );
+      setLoading(false);
+      return;
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      Swal.fire(
+        "Weak Password",
+        "Add at least one uppercase letter",
+        "warning"
+      );
+      setLoading(false);
+      return;
+    }
+
     if (password !== confirmPassword) {
-      Swal.fire("Error", "Passwords do not match", "error");
+      Swal.fire(
+        "Error",
+        "Passwords do not match",
+        "error"
+      );
       setLoading(false);
       return;
     }
@@ -103,6 +147,13 @@ const Register = () => {
     };
 
     try {
+      // Create user in Firebase Authentication
+      await createUser(email, password);
+
+      // Update user profile name and photo in Firebase
+      await updateUserProfile(name, avatarUrl);
+
+      // Save user information in MongoDB database
       const res = await axiosPublic.post("/register", userData);
 
       if (res.data.insertedId || res.data.acknowledged) {
@@ -112,13 +163,15 @@ const Register = () => {
           timer: 1500,
           showConfirmButton: false,
         });
-
         navigate("/login");
-      } else {
-        Swal.fire("Error", "User already exists", "error");
       }
     } catch (err) {
-      Swal.fire("Error", "Something went wrong", "error");
+      console.error("Registration error:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Registration Failed",
+        text: err.message || "Something went wrong during registration",
+      });
     }
 
     setLoading(false);
@@ -347,7 +400,7 @@ const Register = () => {
           {/* LINK */}
           <p className="text-center text-sm text-gray-600">
             Already have an account?{" "}
-            <Link to="/login" className="text-red-500 font-semibold">
+            <Link to="/login" className="text-red-500 font-semibold hover:underline">
               Login
             </Link>
           </p>

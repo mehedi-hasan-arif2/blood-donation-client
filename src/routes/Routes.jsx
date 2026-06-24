@@ -5,7 +5,7 @@ import Home from "../pages/Home";
 import Register from "../pages/Register";
 import Login from "../pages/Login";
 import Search from "../pages/Search";
-import DonationRequests from "../pages/DonationRequests";
+import DonationRequests from "../pages/DonationRequests/DonationRequests"; 
 import Funding from "../pages/Funding";
 
 export const router = createBrowserRouter([
