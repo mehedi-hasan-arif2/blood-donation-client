@@ -10,6 +10,7 @@ import Funding from "../pages/Funding";
 import ErrorPage from "../pages/ErrorPage";
 import PrivateRoute from "./PrivateRoute";
 import DashboardLayout from "../layouts/DashboardLayout"; 
+import Profile from "../pages/Dashboard/Profile";
 
 export const router = createBrowserRouter([
   {
@@ -34,12 +35,14 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  // DASHBOARD ROUTES (Protected by PrivateRoute)
   {
     path: "/dashboard",
     element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
     children: [
-  
+      {
+        path: "profile",
+        element: <Profile />,
+      },
     ],
   },
   // AUTH ROUTES
