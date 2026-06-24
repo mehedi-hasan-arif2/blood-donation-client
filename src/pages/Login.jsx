@@ -5,7 +5,7 @@ import useAuth from "../hooks/useAuth";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/firebase.config";
 import Swal from "sweetalert2";
-import { Mail, Lock, Eye, EyeOff, Heart } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Heart, ArrowLeft } from "lucide-react";
 import Loader from "../components/Loader";
 
 const Login = () => {
@@ -64,7 +64,7 @@ const Login = () => {
   if (loading || authLoading) return <Loader />;
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
 
       {/* LEFT SIDE */}
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-red-600 via-rose-500 to-pink-500 text-white items-center justify-center p-10">
@@ -98,7 +98,7 @@ const Login = () => {
             Join our trusted blood donation community and help save lives every single day.
           </p>
 
-            {/* BADGES */}
+          {/* BADGES */}
           <div className="flex justify-center gap-3 text-xs mt-4">
             <span className="bg-white/20 px-3 py-1 rounded-full backdrop-blur-md">
               Safe
@@ -114,13 +114,23 @@ const Login = () => {
         </div>
       </div>
 
-      {/* RIGHT SIDE */}
-      <div className="flex w-full md:w-1/2 items-center justify-center bg-gray-50 p-6">
+      {/* RIGHT SIDE (FIXED RESPONSIVE ALIGNMENT FOR MOBILE) */}
+      <div className="flex-1 flex items-center justify-center p-6 min-h-screen">
 
         <form
           onSubmit={handleLogin}
-          className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8 space-y-5"
+          className="w-full max-w-md bg-white shadow-2xl rounded-2xl p-8 space-y-5 relative pt-14"
         >
+
+          {/* BACK TO HOME BUTTON (INSIDE FORM CARD) */}
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="absolute top-5 left-6 flex items-center gap-1.5 text-gray-500 hover:text-red-500 font-medium text-xs transition-all duration-300 group cursor-pointer"
+          >
+            <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-0.5" />
+            Back to Home
+          </button>
 
           <h2 className="text-2xl font-bold text-center text-gray-800">
             Welcome Back
@@ -157,7 +167,7 @@ const Login = () => {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute top-3 right-3 text-gray-500"
+              className="absolute top-3 right-3 text-gray-500 cursor-pointer"
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -168,7 +178,7 @@ const Login = () => {
             type="submit"
             disabled={loading}
             className="w-full bg-gradient-to-r from-red-600 via-rose-500 to-pink-500 
-            text-white py-3 rounded-lg font-semibold hover:scale-[1.02] transition"
+            text-white py-3 rounded-lg font-semibold hover:scale-[1.02] transition cursor-pointer"
           >
             Login
           </button>

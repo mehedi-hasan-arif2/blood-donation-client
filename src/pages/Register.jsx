@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import useAxiosPublic from "../hooks/useAxiosPublic";
 import Swal from "sweetalert2";
-import { Mail, Lock, User, Droplet, MapPin, Eye, EyeOff, UploadCloud, Heart, Phone, Map } from "lucide-react";
+import { Mail, Lock, User, Droplet, MapPin, Eye, EyeOff, UploadCloud, Heart, Phone, Map, ArrowLeft } from "lucide-react";
 import Loader from "../components/Loader";
 import districtsData from "../data/districts.json"; 
 import upazilasData from "../data/upazilas.json";
@@ -201,12 +201,22 @@ const Register = () => {
       </div>
 
       {/* RIGHT SIDE */}
-      <div className="flex w-full md:w-1/2 items-center justify-center p-6">
+      <div className="flex w-full md:w-1/2 items-center justify-center p-6 bg-gray-100">
 
         <form
           onSubmit={handleRegister}
-          className="w-full max-w-md bg-white shadow-2xl rounded-2xl p-8 space-y-4"
+          className="w-full max-w-md bg-white shadow-2xl rounded-2xl p-8 space-y-4 relative pt-14"
         >
+
+          {/* BACK TO HOME BUTTON */}
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="absolute top-5 left-6 flex items-center gap-1.5 text-gray-500 hover:text-red-500 font-medium text-xs transition-all duration-300 group cursor-pointer"
+          >
+            <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-0.5" />
+            Back to Home
+          </button>
 
           <h2 className="text-2xl font-bold text-center text-gray-800">
             Create Account

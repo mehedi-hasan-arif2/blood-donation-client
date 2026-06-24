@@ -6,21 +6,21 @@ const Loader = () => {
       <div className="relative flex items-center justify-center">
 
         {/* outer glow ring */}
-        <div className="absolute w-28 h-28 rounded-full bg-red-200 blur-2xl animate-pulse"></div>
+        <div className="absolute w-28 h-28 rounded-full bg-red-200 blur-2xl animate-pulse [animation-duration:0.8s]"></div>
 
         {/* rotating ring */}
-        <div className="w-24 h-24 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-24 h-24 border-4 border-red-500 border-t-transparent rounded-full animate-spin [animation-duration:0.6s]"></div>
 
         {/* logo in center */}
         <img
           src="/assets/logo.png"
           alt="loader logo"
-          className="w-12 h-12 absolute animate-pulse"
+          className="w-12 h-12 absolute animate-pulse [animation-duration:0.8s]"
         />
       </div>
 
       {/* TEXT */}
-      <p className="mt-5 text-red-500 font-semibold tracking-wide animate-pulse">
+      <p className="mt-5 text-red-500 font-semibold tracking-wide animate-pulse [animation-duration:1s]">
         Loading SafeDonor...
       </p>
 
