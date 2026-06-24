@@ -7,6 +7,8 @@ import Login from "../pages/Login";
 import Search from "../pages/Search";
 import DonationRequests from "../pages/DonationRequests/DonationRequests"; 
 import Funding from "../pages/Funding";
+import ErrorPage from "../pages/ErrorPage";
+import PrivateRoute from "./PrivateRoute"; 
 
 export const router = createBrowserRouter([
   {
@@ -27,7 +29,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "funding",
-        element: <Funding />,
+        element: <PrivateRoute><Funding /></PrivateRoute>, 
       },
     ],
   },
@@ -39,5 +41,10 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  // 404 ERROR ROUTE 
+  {
+    path: "*",
+    element: <ErrorPage />,
   },
 ]);

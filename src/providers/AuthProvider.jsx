@@ -13,13 +13,13 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Create new user with email and password
+  // Create user
   const createUser = (email, password) => {
     setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
   };
 
-  // Update user profile name and avatar photo URL
+  // Update profile name & photo
   const updateUserProfile = (name, photo) => {
     return updateProfile(auth.currentUser, {
       displayName: name,
@@ -27,28 +27,26 @@ const AuthProvider = ({ children }) => {
     });
   };
 
-  // Sign out the current user
+  // Logout user
   const logOut = () => {
     setLoading(true);
+    localStorage.removeItem("access-token");
     return signOut(auth);
   };
 
+  // Monitor auth state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      if (!currentUser) {
+        localStorage.removeItem("access-token");
+      }
       setLoading(false);
     });
     return () => unsubscribe();
   }, []);
 
-  // Pass all auth functions and states globally
-  const authInfo = { 
-    user, 
-    loading, 
-    createUser, 
-    updateUserProfile, 
-    logOut 
-  };
+  const authInfo = { user, loading, createUser, updateUserProfile, logOut };
 
   return (
     <AuthContext.Provider value={authInfo}>
