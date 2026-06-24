@@ -8,7 +8,8 @@ import Search from "../pages/Search";
 import DonationRequests from "../pages/DonationRequests/DonationRequests"; 
 import Funding from "../pages/Funding";
 import ErrorPage from "../pages/ErrorPage";
-import PrivateRoute from "./PrivateRoute"; 
+import PrivateRoute from "./PrivateRoute";
+import DashboardLayout from "../layouts/DashboardLayout"; 
 
 export const router = createBrowserRouter([
   {
@@ -29,8 +30,16 @@ export const router = createBrowserRouter([
       },
       {
         path: "funding",
-        element: <PrivateRoute><Funding /></PrivateRoute>, 
+        element: <PrivateRoute><Funding /></PrivateRoute>,
       },
+    ],
+  },
+  // DASHBOARD ROUTES (Protected by PrivateRoute)
+  {
+    path: "/dashboard",
+    element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
+    children: [
+  
     ],
   },
   // AUTH ROUTES
