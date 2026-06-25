@@ -5,12 +5,26 @@ import Home from "../pages/Home";
 import Register from "../pages/Register";
 import Login from "../pages/Login";
 import Search from "../pages/Search";
-import DonationRequests from "../pages/DonationRequests/DonationRequests"; 
+import DonationRequests from "../pages/DonationRequests/DonationRequests";
 import Funding from "../pages/Funding";
 import ErrorPage from "../pages/ErrorPage";
+
 import PrivateRoute from "./PrivateRoute";
-import DashboardLayout from "../layouts/DashboardLayout"; 
+import AdminRoute from "./AdminRoute";
+import VolunteerRoute from "./VolunteerRoute";
+
+import DashboardLayout from "../layouts/DashboardLayout";
+
 import Profile from "../pages/Dashboard/Profile";
+import CreateDonationRequest from "../pages/Dashboard/CreateDonationRequest";
+import DonorHome from "../pages/Dashboard/DonorHome";
+import MyDonationRequests from "../pages/Dashboard/MyDonationRequests";
+
+import RequestDetails from "../pages/DonationRequests/RequestDetails";
+
+import AdminHome from "../pages/Dashboard/AdminHome";
+import AllUsers from "../pages/Dashboard/AllUsers";
+import AllBloodRequests from "../pages/Dashboard/AllBloodRequests";
 
 export const router = createBrowserRouter([
   {
@@ -31,30 +45,90 @@ export const router = createBrowserRouter([
       },
       {
         path: "funding",
-        element: <PrivateRoute><Funding /></PrivateRoute>,
+        element: (
+          <PrivateRoute>
+            <Funding />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "donation-request/:id",
+        element: (
+          <PrivateRoute>
+            <RequestDetails />
+          </PrivateRoute>
+        ),
       },
     ],
   },
+
   {
     path: "/dashboard",
-    element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
+    element: (
+      <PrivateRoute>
+        <DashboardLayout />
+      </PrivateRoute>
+    ),
     children: [
+      {
+        index: true,
+        element: <DonorHome />,
+      },
+
       {
         path: "profile",
         element: <Profile />,
       },
+
+      {
+        path: "create-donation-request",
+        element: <CreateDonationRequest />,
+      },
+
+      {
+        path: "my-donation-requests",
+        element: <MyDonationRequests />,
+      },
+
+      {
+        path: "admin-home",
+        element: (
+          <AdminRoute>
+            <AdminHome />
+          </AdminRoute>
+        ),
+      },
+
+      {
+        path: "all-users",
+        element: (
+          <AdminRoute>
+            <AllUsers />
+          </AdminRoute>
+        ),
+      },
+
+      {
+        path: "all-blood-donation-request",
+        element: (
+          <VolunteerRoute>
+            <AllBloodRequests />
+          </VolunteerRoute>
+        ),
+      },
     ],
   },
-  // AUTH ROUTES
+
   {
     path: "/register",
     element: <Register />,
   },
+
   {
     path: "/login",
     element: <Login />,
   },
-  // 404 ERROR ROUTE 
+
   {
     path: "*",
     element: <ErrorPage />,

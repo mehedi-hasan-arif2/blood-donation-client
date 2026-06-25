@@ -6,7 +6,7 @@ const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  // Using global reusable loader for auth checking state
+  // loader for auth checking 
   if (loading) {
     return <Loader />;
   }
