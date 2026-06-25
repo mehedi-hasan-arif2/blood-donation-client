@@ -163,7 +163,7 @@ const Register = () => {
           timer: 1500,
           showConfirmButton: false,
         });
-        navigate("/login");
+        navigate("/");
       }
     } catch (err) {
       console.error("Registration error:", err);
