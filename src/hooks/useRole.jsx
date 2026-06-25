@@ -20,7 +20,7 @@ const useRole = () => {
 
     const getUserRole = async () => {
       try {
-        const res = await axiosSecure.get(`/users/role/${user.email}`);
+        const res = await axiosSecure.get(`/user/role/${user.email}`);
 
         setRole(res.data?.role || "donor");
         setStatus(res.data?.status || "active");
