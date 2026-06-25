@@ -1,225 +1,212 @@
 import { useState } from "react";
-import { Outlet, Link, NavLink, useNavigate } from "react-router-dom";
-import { 
-  Menu, X, User, Heart, PlusCircle, List, 
-  Users, FileText, Home, LogOut, DollarSign 
+import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
+import {
+  Menu,
+  X,
+  User,
+  Home,
+  Heart,
+  PlusCircle,
+  Users,
+  Droplets,
+  LogOut,
 } from "lucide-react";
+
 import useAuth from "../hooks/useAuth";
+import useRole from "../hooks/useRole";
+import Loader from "../components/Loader";
 
 const DashboardLayout = () => {
   const { user, logOut } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
+  const { isAdmin, isVolunteer, isDonor, roleLoading } = useRole();
 
-  // Temporary role check (We will make it dynamic via backend later)
-  const isAdmin = true; 
-  const isVolunteer = false;
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (roleLoading) {
+    return <Loader />;
+  }
 
   const handleLogout = async () => {
     try {
+      localStorage.removeItem("access-token");
       await logOut();
       navigate("/login");
     } catch (error) {
-      console.error("Logout failed:", error);
+      console.error(error);
     }
   };
 
-  // Sidebar Links based on Roles
-  const links = (
-    <div className="space-y-1.5 font-medium">
-      {/* Common Route for All Logged In Users */}
+  const navClass = ({ isActive }) =>
+    `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+      isActive
+        ? "bg-white text-red-600 shadow-md"
+        : "text-white hover:bg-white/10"
+    }`;
+
+  const sidebarLinks = (
+    <>
       <NavLink
-        to="/dashboard/profile"
+        to="/dashboard"
         end
         onClick={() => setIsOpen(false)}
-        className={({ isActive }) =>
-          `flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 ${
-            isActive 
-              ? "bg-white text-red-600 shadow-md" 
-              : "text-white hover:bg-white/10"
-          }`
-        }
+        className={navClass}
       >
-        <User size={18} /> Profile
+        <Home size={18} />
+        Dashboard Home
       </NavLink>
 
-      {/* Donor Specific Routes */}
-      {!isAdmin && !isVolunteer && (
+      {isDonor && (
         <>
-          <NavLink
-            to="/dashboard"
-            end
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 ${
-                isActive 
-                  ? "bg-white text-red-600 shadow-md" 
-                  : "text-white hover:bg-white/10"
-              }`
-            }
-          >
-            <Home size={18} /> Donor Home
-          </NavLink>
           <NavLink
             to="/dashboard/create-donation-request"
             onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 ${
-                isActive 
-                  ? "bg-white text-red-600 shadow-md" 
-                  : "text-white hover:bg-white/10"
-              }`
-            }
+            className={navClass}
           >
-            <PlusCircle size={18} /> Create Request
+            <PlusCircle size={18} />
+            Create Donation Request
           </NavLink>
+
           <NavLink
             to="/dashboard/my-donation-requests"
             onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 ${
-                isActive 
-                  ? "bg-white text-red-600 shadow-md" 
-                  : "text-white hover:bg-white/10"
-              }`
-            }
+            className={navClass}
           >
-            <Heart size={18} /> My Requests
+            <Heart size={18} />
+            My Donation Requests
           </NavLink>
         </>
       )}
 
-      {/* Admin & Volunteer Shared Routes */}
       {(isAdmin || isVolunteer) && (
-        <>
-          <NavLink
-            to="/dashboard"
-            end
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 ${
-                isActive 
-                  ? "bg-white text-red-600 shadow-md" 
-                  : "text-white hover:bg-white/10"
-              }`
-            }
-          >
-            <Home size={18} /> Dashboard Home
-          </NavLink>
-          <NavLink
-            to="/dashboard/all-blood-donation-request"
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 ${
-                isActive 
-                  ? "bg-white text-red-600 shadow-md" 
-                  : "text-white hover:bg-white/10"
-              }`
-            }
-          >
-            <List size={18} /> All Blood Requests
-          </NavLink>
-        </>
+        <NavLink
+          to="/dashboard/all-blood-donation-request"
+          onClick={() => setIsOpen(false)}
+          className={navClass}
+        >
+          <Droplets size={18} />
+          All Blood Requests
+        </NavLink>
       )}
 
-      {/* Admin Only Routes */}
       {isAdmin && (
-        <>
-          <NavLink
-            to="/dashboard/all-users"
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl transition duration-200 ${
-                isActive 
-                  ? "bg-white text-red-600 shadow-md" 
-                  : "text-white hover:bg-white/10"
-              }`
-            }
-          >
-            <Users size={18} /> All Users
-          </NavLink>
-        </>
+        <NavLink
+          to="/dashboard/all-users"
+          onClick={() => setIsOpen(false)}
+          className={navClass}
+        >
+          <Users size={18} />
+          All Users
+        </NavLink>
       )}
 
-      <hr className="border-white/20 my-4" />
+      <NavLink
+        to="/dashboard/profile"
+        onClick={() => setIsOpen(false)}
+        className={navClass}
+      >
+        <User size={18} />
+        Profile
+      </NavLink>
 
-      {/* Public Home Link */}
+      <div className="border-t border-white/20 my-4"></div>
+
       <Link
         to="/"
-        className="flex items-center gap-3 px-4 py-3 rounded-xl text-white hover:bg-white/10 transition duration-200"
+        className="flex items-center gap-3 px-4 py-3 rounded-xl text-white hover:bg-white/10 transition-all"
       >
-        <Home size={18} /> Back to Public Home
+        <Home size={18} />
+        Public Home
       </Link>
 
-      {/* Logout Button */}
       <button
         onClick={handleLogout}
-        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white hover:bg-red-700/40 font-semibold transition duration-200 text-left cursor-pointer"
+        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white hover:bg-red-700/30 transition-all cursor-pointer"
       >
-        <LogOut size={18} /> Logout
+        <LogOut size={18} />
+        Logout
       </button>
-    </div>
+    </>
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      {/* DESKTOP SIDEBAR */}
-      <aside className="hidden md:flex flex-col w-64 bg-gradient-to-b from-red-600 via-rose-500 to-pink-500 text-white p-6 shadow-xl sticky top-0 h-screen justify-between">
+    <div className="min-h-screen flex bg-gray-100">
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex md:w-72 flex-col justify-between bg-gradient-to-b from-red-600 via-rose-500 to-pink-500 text-white p-6 shadow-xl sticky top-0 h-screen">
         <div>
-          <div className="flex items-center gap-2 mb-8 border-b border-white/20 pb-4">
-            <Heart className="w-8 h-8 animate-pulse text-white fill-white" />
-            <span className="text-xl font-bold tracking-wide">SafeDonor Panel</span>
+          <div className="flex items-center gap-3 mb-8 pb-5 border-b border-white/20">
+            <Heart className="w-8 h-8 fill-white animate-pulse" />
+            <h2 className="text-xl font-bold">
+              Blood Donation Dashboard
+            </h2>
           </div>
-          {links}
+
+          <div className="space-y-2">{sidebarLinks}</div>
         </div>
-        
-        {/* User Status Card */}
-        <div className="flex items-center gap-3 bg-white/10 p-3 rounded-xl border border-white/10">
-          <img 
-            src={user?.photoURL || "https://i.ibb.co/6NGH09t/user-placeholder.png"} 
-            alt="Avatar" 
-            className="w-10 h-10 rounded-full object-cover border border-white/20"
-          />
-          <div className="truncate">
-            <p className="text-sm font-semibold truncate">{user?.displayName}</p>
-            <p className="text-xs text-white/70 truncate">{user?.email}</p>
+
+        <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
+          <div className="flex items-center gap-3">
+            <img
+              src={
+                user?.photoURL ||
+                "https://i.ibb.co/6NGH09t/user-placeholder.png"
+              }
+              alt="user"
+              className="w-12 h-12 rounded-full object-cover border-2 border-white"
+            />
+
+            <div className="overflow-hidden">
+              <h4 className="font-semibold truncate">
+                {user?.displayName || "User"}
+              </h4>
+
+              <p className="text-xs text-white/80 truncate">
+                {user?.email}
+              </p>
+            </div>
           </div>
         </div>
       </aside>
 
-      {/* MOBILE HEADER */}
-      <div className="md:hidden fixed top-0 left-0 right-0 bg-gradient-to-r from-red-500 to-pink-500 text-white h-16 flex items-center justify-between px-6 z-50 shadow-md">
-        <span className="font-bold tracking-wide">SafeDonor Panel</span>
-        <button onClick={() => setIsOpen(!isOpen)} className="focus:outline-none">
+      {/* Mobile Header */}
+      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-gradient-to-r from-red-600 to-pink-500 flex items-center justify-between px-5 text-white z-50 shadow-lg">
+        <h2 className="font-bold">Dashboard</h2>
+
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="cursor-pointer"
+        >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* MOBILE SIDEBAR DRAWERS */}
+      {/* Mobile Overlay */}
       {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/40 z-40 md:hidden transition-opacity"
+        <div
           onClick={() => setIsOpen(false)}
-        />
+          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+        ></div>
       )}
-      <aside className={`fixed top-0 bottom-0 left-0 w-64 bg-gradient-to-b from-red-600 to-pink-500 text-white p-6 z-50 transform ${isOpen ? "translate-x-0" : "-translate-x-full"} transition duration-300 ease-in-out md:hidden flex flex-col justify-between shadow-2xl`}>
-        <div>
-          <div className="flex items-center justify-between mb-6 border-b border-white/20 pb-4">
-            <span className="text-xl font-bold">Menu</span>
-            <button onClick={() => setIsOpen(false)}><X size={20} /></button>
-          </div>
-          {links}
+
+      {/* Mobile Sidebar */}
+      <aside
+        className={`fixed top-0 left-0 bottom-0 w-72 bg-gradient-to-b from-red-600 via-rose-500 to-pink-500 text-white p-6 z-50 transform transition-transform duration-300 md:hidden ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="font-bold text-lg">Dashboard</h2>
+
+          <button onClick={() => setIsOpen(false)}>
+            <X size={24} />
+          </button>
         </div>
-        <div className="flex items-center gap-3 bg-white/10 p-3 rounded-xl">
-          <img src={user?.photoURL || "https://i.ibb.co/6NGH09t/user-placeholder.png"} alt="Avatar" className="w-10 h-10 rounded-full object-cover"/>
-          <div className="truncate">
-            <p className="text-sm font-semibold truncate">{user?.displayName}</p>
-          </div>
-        </div>
+
+        <div className="space-y-2">{sidebarLinks}</div>
       </aside>
 
-      {/* MAIN CONTENT AREA */}
-      <main className="flex-1 p-6 md:p-10 pt-24 md:pt-10 overflow-x-hidden w-full max-w-7xl mx-auto">
+      {/* Main Content */}
+      <main className="flex-1 p-5 md:p-8 pt-24 md:pt-8 overflow-x-auto">
         <Outlet />
       </main>
     </div>
