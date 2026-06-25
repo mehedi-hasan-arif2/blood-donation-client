@@ -3,7 +3,7 @@ import useAuth from "./useAuth";
 import useAxiosSecure from "./useAxiosSecure";
 
 const useRole = () => {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const axiosSecure = useAxiosSecure();
 
   const [role, setRole] = useState("donor");
@@ -11,7 +11,7 @@ const useRole = () => {
   const [roleLoading, setRoleLoading] = useState(true);
 
   useEffect(() => {
-    if (loading) return;
+    if (authLoading) return;
 
     if (!user?.email) {
       setRoleLoading(false);
@@ -21,18 +21,17 @@ const useRole = () => {
     const getUserRole = async () => {
       try {
         const res = await axiosSecure.get(`/user/role/${user.email}`);
-
         setRole(res.data?.role || "donor");
         setStatus(res.data?.status || "active");
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching role:", error);
       } finally {
         setRoleLoading(false);
       }
     };
 
     getUserRole();
-  }, [user, loading, axiosSecure]);
+  }, [user, authLoading, axiosSecure]);
 
   return {
     role,
