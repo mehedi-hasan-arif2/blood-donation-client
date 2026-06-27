@@ -5,7 +5,6 @@ BloodFlow is a full-stack MERN application that connects blood donors with recip
 ## 🔗 Live Demo
 
 - **Client:** https://flourishing-stardust-3c763a.netlify.app/
-- **Server:** https://blood-donation-server-4q6i.onrender.com
 
 ---
 
