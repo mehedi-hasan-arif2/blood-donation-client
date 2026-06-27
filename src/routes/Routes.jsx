@@ -14,7 +14,7 @@ import AdminRoute from "./AdminRoute";
 import VolunteerRoute from "./VolunteerRoute";
 
 import DashboardLayout from "../layouts/DashboardLayout";
-import DashboardHome from "../pages/Dashboard/DashboardHome"; 
+import DashboardHome from "../pages/Dashboard/DashboardHome";
 
 import Profile from "../pages/Dashboard/Profile";
 import CreateDonationRequest from "../pages/Dashboard/CreateDonationRequest";
@@ -24,6 +24,7 @@ import RequestDetails from "../pages/DonationRequests/RequestDetails";
 
 import AllUsers from "../pages/Dashboard/AllUsers";
 import AllBloodRequests from "../pages/Dashboard/AllBloodRequests";
+import EditDonationRequest from "../pages/Dashboard/EditDonationRequest";
 
 export const router = createBrowserRouter([
   {
@@ -71,7 +72,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <DashboardHome />, // এখানে রিপ্লেস করা হয়েছে
+        element: <DashboardHome />,
       },
 
       {
@@ -87,6 +88,11 @@ export const router = createBrowserRouter([
       {
         path: "my-donation-requests",
         element: <MyDonationRequests />,
+      },
+
+      {
+        path: "edit-donation-request/:id",
+        element: <EditDonationRequest />,
       },
 
       {

@@ -1,11 +1,11 @@
-import useAuth from "../hooks/useAuth"; 
+import useAuth from "../hooks/useAuth";
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import useAxiosPublic from "../hooks/useAxiosPublic";
 import Swal from "sweetalert2";
 import { Mail, Lock, User, Droplet, MapPin, Eye, EyeOff, UploadCloud, Heart, Phone, Map, ArrowLeft } from "lucide-react";
 import Loader from "../components/Loader";
-import districtsData from "../data/districts.json"; 
+import districtsData from "../data/districts.json";
 import upazilasData from "../data/upazilas.json";
 
 const Register = () => {
@@ -13,21 +13,22 @@ const Register = () => {
   const navigate = useNavigate();
   const axiosPublic = useAxiosPublic();
 
-  // Redirect logged-in users to home page
+  const [registered, setRegistered] = useState(false);
+
   useEffect(() => {
-    if (user) {
+    if (user && !registered) {
       navigate("/");
     }
-  }, [user, navigate]);
+  }, [user, navigate, registered]);
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  
+
   // Image and preview states
   const [image, setImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null); 
-  
+  const [imagePreview, setImagePreview] = useState(null);
+
   const [selectedDistrictId, setSelectedDistrictId] = useState("");
   const [filteredUpazilas, setFilteredUpazilas] = useState([]);
 
@@ -47,7 +48,7 @@ const Register = () => {
     const file = e.target.files[0];
     if (file) {
       setImage(file);
-      setImagePreview(URL.createObjectURL(file)); 
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
@@ -57,9 +58,9 @@ const Register = () => {
     formData.append("image", imageFile);
 
     const url = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API_KEY}`;
-    
+
     const response = await axiosPublic.post(url, formData);
-    return response.data.data.display_url; 
+    return response.data.data.display_url;
   };
 
   const handleRegister = async (e) => {
@@ -73,19 +74,19 @@ const Register = () => {
     const email = form.email.value;
     const password = form.password.value;
     const confirmPassword = form.confirmPassword.value;
-    
+
     // Image validation
     if (!image) {
-     Swal.fire(
-     "Avatar Required",
-     "Please upload your profile picture",
-     "warning"
-    );
-     setLoading(false);
-     return;
+      Swal.fire(
+        "Avatar Required",
+        "Please upload your profile picture",
+        "warning"
+      );
+      setLoading(false);
+      return;
     }
 
-        // Password validation
+    // Password validation
     if (password.length < 6) {
       Swal.fire(
         "Weak Password",
@@ -117,7 +118,7 @@ const Register = () => {
     }
 
     let avatarUrl = "";
-    
+
     // Upload image if a file is selected
     if (image) {
       try {
@@ -125,13 +126,13 @@ const Register = () => {
       } catch (error) {
         Swal.fire("Error", "Image upload failed! Please check your connection.", "error");
         setLoading(false);
-        return; 
+        return;
       }
     }
 
     const districtName = form.district.options[form.district.selectedIndex].text;
     const upazilaName = form.upazila.options[form.upazila.selectedIndex].text;
-    
+
     const userData = {
       name,
       email,
@@ -139,7 +140,7 @@ const Register = () => {
       avatar: avatarUrl,
       bloodGroup: form.bloodGroup.value,
       district: districtName,
-      upazila: upazilaName,   
+      upazila: upazilaName,
       phone: form.phone.value,
       gender: form.gender.value,
       role: "donor",
@@ -157,14 +158,20 @@ const Register = () => {
       const res = await axiosPublic.post("/register", userData);
 
       if (res.data.insertedId || res.data.acknowledged) {
+        // after login take token
+        const loginRes = await axiosPublic.post("/login", { email, password });
+        localStorage.setItem("access-token", loginRes.data.token);
+
         Swal.fire({
           icon: "success",
           title: "Registration Successful",
           timer: 1500,
           showConfirmButton: false,
         });
-        navigate("/");
+
+        navigate("/dashboard");
       }
+
     } catch (err) {
       console.error("Registration error:", err);
       Swal.fire({
@@ -222,9 +229,9 @@ const Register = () => {
             Create Account
           </h2>
 
-         {/* Form Box Start */}
+          {/* Form Box Start */}
 
-         {/* AVATAR UPLOAD WITH LIVE PREVIEW */}
+          {/* AVATAR UPLOAD WITH LIVE PREVIEW */}
           <div className="flex items-center gap-4 border p-3 rounded-lg bg-white">
             <label className="flex items-center gap-2 cursor-pointer text-gray-600 hover:text-red-500 transition flex-1">
               <UploadCloud size={18} />
@@ -238,13 +245,13 @@ const Register = () => {
                 onChange={handleImageChange}
               />
             </label>
-            
+
             {/* Live Preview Circle */}
             {imagePreview ? (
               <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-red-500 shadow-sm shrink-0">
-                <img 
-                  src={imagePreview} 
-                  alt="Avatar Preview" 
+                <img
+                  src={imagePreview}
+                  alt="Avatar Preview"
                   className="w-full h-full object-cover"
                 />
               </div>

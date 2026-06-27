@@ -44,7 +44,7 @@ const Login = () => {
             showConfirmButton: false,
           });
 
-          navigate("/");
+          navigate("/dashboard");
         } else {
           Swal.fire("Error", "Invalid credentials", "error");
         }
@@ -114,7 +114,7 @@ const Login = () => {
         </div>
       </div>
 
-      {/* RIGHT SIDE (FIXED RESPONSIVE ALIGNMENT FOR MOBILE) */}
+      {/* RIGHT SIDE */}
       <div className="flex-1 flex items-center justify-center p-6 min-h-screen">
 
         <form
@@ -122,7 +122,7 @@ const Login = () => {
           className="w-full max-w-md bg-white shadow-2xl rounded-2xl p-8 space-y-5 relative pt-14"
         >
 
-          {/* BACK TO HOME BUTTON (INSIDE FORM CARD) */}
+          {/* BACK TO HOME BUTTON */}
           <button
             type="button"
             onClick={() => navigate("/")}

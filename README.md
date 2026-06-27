@@ -1,41 +1,187 @@
-# BloodFlow - Community Blood Donation Platform
+# 🩸 BloodFlow - Community Blood Donation Platform
 
-BloodFlow is a full-stack MERN application designed to connect blood donors with those in need. Built with a focus on real-world utility, role-based access control, and efficient resource management.
+BloodFlow is a full-stack MERN application that connects blood donors with recipients through a secure and user-friendly platform. The application provides role-based dashboards, blood donation request management, donor search, and Stripe-powered funding to support community blood donation activities.
 
-## 🔗 Live Site
-[https://flourishing-stardust-3c763a.netlify.app/](https://flourishing-stardust-3c763a.netlify.app/)
+## 🔗 Live Demo
 
-## 🛠 Project Implementation Workflow
-To ensure a clean and scalable codebase, the development was divided into the following milestones:
-
-1. **Environment Setup & Base UI:** Initialized Vite React project, integrated Tailwind CSS & DaisyUI, and structured the overall responsive layout.
-2. **Authentication System:** Implemented user registration, login, and secure state management using JWT to handle user sessions.
-3. **Database & API Integration:** Setup MongoDB/Mongoose schemas and built RESTful APIs for CRUD operations on donation requests.
-4. **Role-Based Access Control:** Developed distinct dashboards for **Donors**, **Volunteers**, and **Admins** with private route protection.
-5. **Core Functionality Logic:** Built the advanced Donor Search engine, request filtering (Pending/InProgress/Done), and profile update logic.
-6. **Payment & Security:** Integrated Stripe for funding modules and secured frontend/backend configuration with environment variables.
-7. **Optimization & UX:** Added Framer Motion for smooth transitions, implemented loading/error states, and fine-tuned UI alignment.
-
-## 🌟 Key Features
-- **Smart Donor Search:** Filter donors by Blood Group, District, and Upazila.
-- **Dynamic Dashboards:** Personalized views based on user roles.
-- **Secure Funding:** Integrated Stripe payment system for community support.
-- **Request Lifecycle:** Complete tracking of blood donation requests.
-- **Data Management:** Admin capabilities to block/unblock users and manage roles.
-
-## ⚙️ Tech Stack & Dependencies
-- **Frontend:** React.js, Tailwind CSS, DaisyUI, TanStack Query, React Hook Form, Framer Motion.
-- **Backend:** Node.js, Express.js, MongoDB (Mongoose), JWT.
-- **Deployment:** Netlify (Client), Vercel/Render (Server).
-
-## 🚀 Getting Started
-### Setup Instructions:
-1. **Clone the repository.**
-2. **Install dependencies:** `npm install`
-3. **Configure Environment Variables:**
-   - Create a `.env` file in the client folder with: `VITE_API_URL`, `VITE_IMAGEBB_API_KEY`.
-   - Create a `.env` file in the server folder with: `DB_USER`, `DB_PASS`, `ACCESS_TOKEN_SECRET`, `STRIPE_SECRET_KEY`.
-4. **Run the project:** `npm run dev` (Client) | `npm run start` (Server)
+- **Client:** https://flourishing-stardust-3c763a.netlify.app/
+- **Server:** https://blood-donation-server-4q6i.onrender.com
 
 ---
-*Developed as a full-stack solution to facilitate community-driven blood donation.*
+
+## 🚀 Features
+
+- User Registration & Login with JWT Authentication
+- Role-Based Dashboard (Admin, Donor, Volunteer)
+- Blood Donation Request Management
+- Search Donors by Blood Group, District & Upazila
+- Profile Update System
+- Admin User Management (Role & Status Control)
+- Volunteer Donation Request Management
+- Secure Stripe Payment Integration
+- Responsive Design for Mobile, Tablet & Desktop
+- Protected Routes & Secure API Access
+- Pagination for Users, Requests and Funding History
+
+---
+
+## 🛠️ Technology Stack
+
+### Frontend
+- React.js
+- React Router
+- Tailwind CSS
+- DaisyUI
+- TanStack React Query
+- Axios
+- React Hook Form
+- Framer Motion
+- React Hot Toast
+- Lucide React
+- Stripe React SDK
+
+### Backend
+- Node.js
+- Express.js
+- MongoDB
+- JWT Authentication
+- bcryptjs
+- Stripe API
+
+---
+
+## 📦 Installation
+
+### Clone Repository
+
+```bash
+git clone <repository-url>
+```
+
+### Install Dependencies
+
+Client
+
+```bash
+npm install
+```
+
+Server
+
+```bash
+npm install
+```
+
+---
+
+## ⚙️ Environment Variables
+
+### Client (.env)
+
+```env
+VITE_API_URL=
+VITE_IMGBB_API_KEY=
+VITE_STRIPE_PK=
+
+VITE_apiKey=
+VITE_authDomain=
+VITE_projectId=
+VITE_storageBucket=
+VITE_messagingSenderId=
+VITE_appId=
+```
+
+### Server (.env)
+
+```env
+PORT=
+MONGO_URI=
+ACCESS_TOKEN_SECRET=
+STRIPE_SECRET_KEY=
+```
+
+---
+
+## ▶️ Run Locally
+
+### Client
+
+```bash
+npm run dev
+```
+
+### Server
+
+```bash
+npm start
+```
+
+---
+
+## 🔐 User Roles
+
+### 👤 Donor
+
+- Register and Login
+- Create Donation Request
+- Manage Own Requests
+- Update Profile
+- Donate through Funding System
+- Search Blood Donors
+
+### 🤝 Volunteer
+
+- All Donor Features
+- Manage Donation Requests
+- Update Donation Status
+
+### 👑 Admin
+
+- All Volunteer Features
+- Manage Users
+- Change User Roles
+- Block / Unblock Users
+- View Dashboard Statistics
+
+---
+
+## 💳 Stripe Test Payment
+
+Use the following test card to verify the payment system.
+
+| Field | Value |
+|-------|-------|
+| Card Number | **4242 4242 4242 4242** |
+| Expiry Date | **Any future date** |
+| CVC | **Any 3 digits** |
+| ZIP Code | **Any 5 digits** |
+
+---
+
+## 📁 Project Structure
+
+```
+client/
+server/
+```
+
+---
+
+## 🔒 Security
+
+- JWT Authentication
+- Password Hashing using bcryptjs
+- Environment Variables for Sensitive Credentials
+- Protected API Routes
+- Role-Based Authorization
+- Secure Stripe Payment Processing
+
+---
+
+## 👨‍💻 Developed By
+
+**Mehedi Hasan Arif**
+
+Full Stack MERN Developer
+
+---

@@ -81,7 +81,7 @@ const Navbar = () => {
                 className="flex items-center gap-2 focus:outline-none"
               >
                 <img
-                  src={user?.photoURL || "https://i.ibb.co/6NGH09t/user-placeholder.png"}
+                 src={user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.displayName || 'User')}&background=dc2626&color=fff&rounded=true`}
                   alt={user?.displayName || "User Avatar"}
                   className="w-10 h-10 rounded-full border-2 border-white object-cover cursor-pointer hover:scale-105 transition"
                 />
